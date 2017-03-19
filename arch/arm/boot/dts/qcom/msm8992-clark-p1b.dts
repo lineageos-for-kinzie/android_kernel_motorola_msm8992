@@ -1,0 +1,101 @@
+/* Copyright (c) 2015, Motorola Mobility LLC. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+/dts-v1/;
+
+#include "msm8992-clark.dtsi"
+#include "dsi-panel-mot-inx-570-QHD-cmd.dtsi"
+
+/ {
+	qcom,board-id = <0x41 0x81b0>;
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&mot_inx_570_QHD_0_cmd_v0>;
+	vddio_disp-supply = <&pm8994_l14>;
+	vsp_disp-supply = <&isl98611a_pos>;
+	vsn_disp-supply = <&isl98611a_neg>;
+
+	#include"dsi-panel-mot-inx-570-QHD-supplies.dtsi"
+};
+
+&mdss_dsi1 {
+	qcom,dsi-pref-prim-pan = <&mot_inx_570_QHD_1_cmd_v0>;
+	vddio_disp-supply = <&pm8994_l14>;
+	vsp_disp-supply = <&isl98611a_pos>;
+	vsn_disp-supply = <&isl98611a_neg>;
+
+	#include"dsi-panel-mot-inx-570-QHD-supplies.dtsi"
+};
+
+&pm8994_l14 {
+	regulator-boot-on;
+	regulator-always-on;
+};
+
+&isl98611a_pos {
+	regulator-boot-on;
+};
+
+&isl98611a_neg {
+	regulator-boot-on;
+};
+
+&mot_inx_570_QHD_0_cmd_v0 {
+	qcom,cont-splash-enabled;
+};
+
+&mot_inx_570_QHD_1_cmd_v0 {
+	qcom,cont-splash-enabled;
+};
+
+&pm8994_gpios {
+	gpio@c500 { /* GPIO 6 - DISP_V3_EN */
+		status = "okay";
+		qcom,mode = <1>; /* Output */
+		qcom,pull = <5>; /* None */
+		qcom,vin-sel = <2>;
+		qcom,src-sel = <0>; /* FUNC_CONSTANT */
+		qcom,out-strength = <1>;
+		qcom,master-en = <1>;
+		qcom,invert = <1>; /* Invert default 0 to get 1 */
+	};
+};
+
+&isl98611 {
+	intersil,switch-supply = "pm8994_l14";
+};
+
+&i2c_11 {
+	drv2605@5a {
+		external_trigger = <2>; /* Disable ext. trigger */
+	};
+
+	smb1351-charger@57 {
+		status = "ok";
+		compatible = "qcom,smb1351-charger";
+		reg = <0x57>;
+		qcom,parallel-charger;
+		qcom,float-voltage-mv = <4400>;
+		qcom,recharge-mv = <100>;
+	};
+};
+
+&soc {
+	i2c_5: i2c@f9927000 {
+		motosh@43 {
+			antcap_cfg = [50 40 10 00 00 09 59 00 00 0d 89 00 00 09 e9 00 00 17 33 13 88 00 00 00 00 00 00 14 1E 01 48 7f ff 00 00 00 00 00 de ad be ef 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ];
+			aod_touch_mode = <1>;	/* AOD touch mode <1> enables both interrupt and polling modes */
+		};
+	};
+};

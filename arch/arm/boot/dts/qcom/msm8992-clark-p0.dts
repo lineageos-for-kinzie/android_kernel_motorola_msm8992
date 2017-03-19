@@ -1,0 +1,76 @@
+/* Copyright (c) 2015, Motorola Mobility LLC. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+/dts-v1/;
+
+#include "msm8992-clark.dtsi"
+#include "dsi-panel-mot-inx-500-720p-video.dtsi"
+
+/ {
+	qcom,board-id = <0x41 0x8000>;
+};
+
+&pm8994_l14 {
+	regulator-always-on;
+};
+
+&isl98611 {
+	intersil,vn = <20>;
+	intersil,vp = <20>;
+	intersil,switch-supply = "pm8994_l14";
+};
+
+&mdss_dsi0 {
+	/delete-property/ mmi,mipi-d0-sel;
+	qcom,dsi-pref-prim-pan = <&mot_inx_500_720p_vid_v0>;
+	vddio_disp-supply = <&pm8994_l14>;
+	vsp_disp-supply = <&isl98611a_pos>;
+	vsn_disp-supply = <&isl98611a_neg>;
+
+	#include"dsi-panel-mot-inx-500-720p-supplies.dtsi"
+};
+
+&mdss_dsi1 {
+	status = "disabled";
+};
+
+&pm8994_gpios {
+	gpio@c300 { /* GPIO 4 - EN_BST_BYP */
+		status = "okay";
+		qcom,mode = <1>; /* Output */
+		qcom,pull = <5>; /* None */
+		qcom,vin-sel = <2>;
+		qcom,src-sel = <0>;
+		qcom,out-strength = <1>;
+		qcom,master-en = <1>;
+	};
+};
+
+&soc {
+	i2c_5: i2c@f9927000 {
+		motosh@43 {
+			aod_touch_mode = <1>;	/* AOD touch mode <1> enables both interrupt and polling modes */
+		};
+	};
+};
+
+&i2c_11 {
+	smb1351-charger@57 {
+		status = "ok";
+		compatible = "qcom,smb1351-charger";
+		reg = <0x57>;
+		qcom,parallel-charger;
+		qcom,float-voltage-mv = <4400>;
+		qcom,recharge-mv = <100>;
+	};
+};

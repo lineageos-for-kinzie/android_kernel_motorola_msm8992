@@ -1,0 +1,188 @@
+/* Copyright (c) 2014-2015, Motorla Mobility LLC. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "dsi-panel-mot-smd-QHD-cmd.dtsi"
+
+/ {
+	model = "bunkerhill";
+	compatible = "qcom,msm8994-bunkerhill", "qcom,msm8994-moto", "qcom,msm8994";
+};
+
+&pm8994_l29 {
+	/delete-property/ regulator-always-on;
+};
+
+&pm8994_l14 {
+	regulator-boot-on;
+};
+
+&pm8994_l18 {
+	regulator-min-microvolt = <3100000>;
+	regulator-max-microvolt = <3100000>;
+	qcom,init-voltage = <3100000>;
+	regulator-boot-on;
+};
+
+&vbat_disp_vreg {
+	regulator-boot-on;
+};
+
+&mdss_fb0 {
+	qcom,mdss-fb-split = <720 720>;
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&mot_smd_QHD_0_cmd_v1>;
+	vbat_disp-supply = <&vbat_disp_vreg>;
+	vdd_disp-supply = <&pm8994_l14>;
+	vci_disp-supply = <&pm8994_l18>;
+
+	#include "dsi-panel-mot-smd-QHD-cmd-supplies.dtsi"
+};
+
+&mdss_dsi1 {
+	qcom,dsi-pref-prim-pan = <&mot_smd_QHD_1_cmd_v1>;
+	vbat_disp-supply = <&vbat_disp_vreg>;
+	vdd_disp-supply = <&pm8994_l14>;
+	vci_disp-supply = <&pm8994_l18>;
+
+	#include "dsi-panel-mot-smd-QHD-cmd-supplies.dtsi"
+};
+
+&mot_smd_QHD_0_cmd_v0 {
+	qcom,cont-splash-enabled;
+};
+
+&mot_smd_QHD_1_cmd_v0 {
+	qcom,cont-splash-enabled;
+};
+
+&mot_smd_QHD_0_cmd_v1 {
+	qcom,cont-splash-enabled;
+};
+
+&mot_smd_QHD_1_cmd_v1 {
+	qcom,cont-splash-enabled;
+};
+
+&pmi8994_charger {
+	qcom,float-voltage-mv = <4350>;
+};
+
+&i2c_11 {
+	smb1351-charger@1d {
+		status = "disable";
+	};
+	smb1357_otg_vreg: smb1357-charger@1e {
+		status = "okay";
+	};
+};
+
+&bt_vreg {
+	gpio = <&pm8994_gpios 11 0>;
+};
+
+&cci {
+	/* IMX230 */
+	qcom,camera@0 {
+		cam_vdig-supply = <&pm8994_l27>;
+		cam_vio-supply = <&pm8994_lvs1>;
+		qcom,cam-vreg-name = "cam_vdig", "cam_vio";
+		qcom,cam-vreg-min-voltage = <1050000 0>;
+		qcom,cam-vreg-max-voltage = <1050000 0>;
+		qcom,cam-vreg-op-mode = <105000 0>;
+
+        gpios = <&msm_gpio 13 0>,
+			<&msm_gpio 30 0>,
+			<&msm_gpio 95 0>,
+			<&msm_gpio 126 0>;
+		qcom,gpio-reset = <1>;
+		qcom,gpio-vana = <2>;
+		qcom,gpio-standby = <3>;
+		qcom,gpio-req-tbl-num = <0 1 2 3>;
+		qcom,gpio-req-tbl-flags = <1 0 0 0>;
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK0",
+					  "CAM_RESET0",
+					  "CAM_VANA",
+					  "CAM_PWRDN";
+	};
+};
+
+&bcm2079x {
+	gpios = <&pm8994_gpios 9 0>, /* NFC_ENABLE_N */
+		<&msm_gpio 90 0>, /* NFC_IRQ */
+		<&pm8994_gpios 13 0>; /* NFC_POWER_ON */
+};
+
+&tlmm_pinmux {
+	pmx_tfa9890_reset {
+		qcom,pins = <&gp 105>;
+	};
+
+	batt_discon_warn_n {
+		qcom,pins = <&gp 64>;
+	};
+
+	pmx_motosh_out {
+		qcom,pins = <&gp 78 &gp 89>;
+	};
+
+	cam_sensor_rear_pinctrl {
+		/*RESET, POWERDOWN, AVDD_EN */
+		qcom,pins = <&gp 30>, <&gp 126>, <&gp 95>;
+		qcom,num-grp-pins = <3>;
+	};
+};
+
+&tfa9890 {
+	gpios = <&msm_gpio 105 0>;     /* RESET */
+};
+
+&soc {
+	factory_support {
+		gpios = <&pm8994_gpios 8 0x0>, /* GPIOF_OUT_INIT_LOW */
+			<&pmi8994_gpios 5 0x1>, /* GPIOF_IN */
+			<&msm_gpio 64 0x1>; /* GPIOF_IN */
+	};
+};
+
+&motosh {
+	gpios = <&msm_gpio 127 0>,      /* IRQ          */
+		<&pm8994_mpps 5 0>,     /* RESET        */
+		<&msm_gpio 78 0>,       /* BSLEN        */
+		<&msm_gpio 65 0>,       /* WakeIRQ      */
+		<&msm_gpio 89 0>,       /* SH Wake      */
+		<&msm_gpio 16 0>;       /* SH Wake Resp */
+		accel_orient = <7>;     /* Accel Orientation value */
+		gyro_orient = <7>;      /* Gyro Orientation value */
+		mag_orient = <5>;       /* Mag Orientation value */
+		panel_type = <0>;       /* Panel Type value */
+		IR_config = <0>;        /* IR Config value */
+		aod_touch_mode = <1>;	/* AOD touch mode <1> enables both interrupt and polling modes */
+};
+
+&drv2605 {
+	gpios = <&msm_gpio 91 0>;        /* EN_GPIO */
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&drv2605_en_default>;
+};
+
+&sdhc_2 {
+	cd-gpios = <&pm8994_gpios 22 0x1>;
+};
+
+&pm8994_gpios {
+	gpio@d500 { /* GPIO 22 - SDC_DET_N */
+		qcom,pull = <0>; /* Up */
+	};
+};
