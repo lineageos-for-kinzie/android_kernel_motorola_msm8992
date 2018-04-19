@@ -60,7 +60,7 @@ static bool hide_name(const char *name, int namlen)
 		if (!su_visible())
 			return true;
 	return false;
-
+}
 
 /*
  * Traditional linux readdir() handling..
